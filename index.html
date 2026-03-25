@@ -489,12 +489,7 @@
       border-radius: 16px;
       box-shadow: 0 20px 60px rgba(0,0,0,0.6);
       display: block;
-      animation: lb-img-in 0.25s ease;
-    }
-
-    @keyframes lb-img-in {
-      from { transform: scale(0.94); opacity: 0; }
-      to   { transform: scale(1);    opacity: 1; }
+      transform-origin: center center;
     }
 
     #lb-caption {
@@ -899,7 +894,7 @@
 
     revealEls.forEach(el => observer.observe(el));
 
-    // ── Lightbox ──
+    // ── Lightbox with shared-element zoom transition ──
     const lightbox  = document.getElementById('lightbox');
     const lbImg     = document.getElementById('lb-img');
     const lbCaption = document.getElementById('lb-caption');
@@ -909,54 +904,134 @@
     const lbNext    = document.getElementById('lb-next');
     const items     = Array.from(document.querySelectorAll('.g-item'));
     let current     = 0;
+    let sourceThumb = null; // thumbnail img that was tapped — used for close animation
+    let closing     = false;
 
     function openLightbox(index) {
+      if (closing) return;
       current = index;
-      const item   = items[index];
-      const img    = item.querySelector('img');
-      lbImg.src    = img.src;
-      lbImg.alt    = img.alt;
+      const item = items[index];
+      const img  = item.querySelector('img');
+      sourceThumb = img;
+
+      lbImg.src = img.src;
+      lbImg.alt = img.alt;
       lbCaption.textContent = item.dataset.caption || img.alt;
       lbCounter.textContent = `${index + 1} / ${items.length}`;
+
+      // Show the lightbox (invisible) so we can measure lb-img's final position
+      lightbox.style.opacity    = '0';
+      lightbox.style.transition = 'none';
       lightbox.classList.add('open');
       document.body.style.overflow = 'hidden';
-      lbImg.style.animation = 'none';
-      requestAnimationFrame(() => { lbImg.style.animation = ''; });
+
+      requestAnimationFrame(() => {
+        const thumbRect = img.getBoundingClientRect();
+        const lbRect    = lbImg.getBoundingClientRect();
+
+        if (lbRect.width === 0 || lbRect.height === 0) {
+          // Fallback: simple fade if image isn't laid out yet
+          lightbox.style.transition = 'opacity 0.25s ease';
+          lightbox.style.opacity = '1';
+          return;
+        }
+
+        // Calculate transform that places lb-img on top of the thumbnail
+        const scaleX = thumbRect.width  / lbRect.width;
+        const scaleY = thumbRect.height / lbRect.height;
+        const tx = thumbRect.left + thumbRect.width  / 2 - (lbRect.left + lbRect.width  / 2);
+        const ty = thumbRect.top  + thumbRect.height / 2 - (lbRect.top  + lbRect.height / 2);
+
+        // Snap to starting position (no transition yet)
+        lbImg.style.transition   = 'none';
+        lbImg.style.transform    = `translate(${tx}px, ${ty}px) scale(${scaleX}, ${scaleY})`;
+        lbImg.style.borderRadius = '20px'; // match thumbnail border-radius
+
+        // Next frame: animate to final centered position
+        requestAnimationFrame(() => {
+          lbImg.style.transition   = 'transform 0.38s cubic-bezier(0.4, 0, 0.2, 1), border-radius 0.38s ease';
+          lbImg.style.transform    = 'none';
+          lbImg.style.borderRadius = '16px';
+          lightbox.style.transition = 'opacity 0.22s ease';
+          lightbox.style.opacity    = '1';
+        });
+      });
     }
 
     function closeLightbox() {
-      lightbox.classList.remove('open');
-      document.body.style.overflow = '';
+      if (closing) return;
+      closing = true;
+
+      const lbRect = lbImg.getBoundingClientRect();
+
+      if (sourceThumb && lbRect.width > 0) {
+        const thumbRect = sourceThumb.getBoundingClientRect();
+        const scaleX = thumbRect.width  / lbRect.width;
+        const scaleY = thumbRect.height / lbRect.height;
+        const tx = thumbRect.left + thumbRect.width  / 2 - (lbRect.left + lbRect.width  / 2);
+        const ty = thumbRect.top  + thumbRect.height / 2 - (lbRect.top  + lbRect.height / 2);
+
+        lbImg.style.transition   = 'transform 0.33s cubic-bezier(0.4, 0, 0.2, 1), border-radius 0.33s ease';
+        lbImg.style.transform    = `translate(${tx}px, ${ty}px) scale(${scaleX}, ${scaleY})`;
+        lbImg.style.borderRadius = '20px';
+        lightbox.style.transition = 'opacity 0.28s ease';
+        lightbox.style.opacity    = '0';
+        lightbox.style.pointerEvents = 'none';
+        setTimeout(finalizeClose, 340);
+      } else {
+        lightbox.style.transition = 'opacity 0.2s ease';
+        lightbox.style.opacity    = '0';
+        setTimeout(finalizeClose, 220);
+      }
     }
 
-    function showPrev() { openLightbox((current - 1 + items.length) % items.length); }
-    function showNext() { openLightbox((current + 1) % items.length); }
+    function finalizeClose() {
+      lightbox.classList.remove('open');
+      document.body.style.overflow = '';
+      lbImg.style.cssText      = '';
+      lightbox.style.cssText   = '';
+      closing = false;
+    }
+
+    function navigate(dir) {
+      current = (current + dir + items.length) % items.length;
+      const item = items[current];
+      const img  = item.querySelector('img');
+      sourceThumb = img;
+
+      // Fade the image out, swap, fade back in
+      lbImg.style.transform    = '';
+      lbImg.style.borderRadius = '';
+      lbImg.style.transition   = 'opacity 0.15s ease';
+      lbImg.style.opacity      = '0';
+      setTimeout(() => {
+        lbImg.src = img.src;
+        lbImg.alt = img.alt;
+        lbCaption.textContent = item.dataset.caption || img.alt;
+        lbCounter.textContent = `${current + 1} / ${items.length}`;
+        lbImg.style.opacity = '1';
+      }, 150);
+    }
 
     items.forEach((item, i) => item.addEventListener('click', () => openLightbox(i)));
     lbClose.addEventListener('click', closeLightbox);
-    lbPrev.addEventListener('click', (e) => { e.stopPropagation(); showPrev(); });
-    lbNext.addEventListener('click', (e) => { e.stopPropagation(); showNext(); });
+    lbPrev.addEventListener('click', (e) => { e.stopPropagation(); navigate(-1); });
+    lbNext.addEventListener('click', (e) => { e.stopPropagation(); navigate(1);  });
+    lightbox.addEventListener('click', (e) => { if (e.target === lightbox) closeLightbox(); });
 
-    // Close on backdrop click
-    lightbox.addEventListener('click', (e) => {
-      if (e.target === lightbox) closeLightbox();
-    });
-
-    // Keyboard navigation
     document.addEventListener('keydown', (e) => {
       if (!lightbox.classList.contains('open')) return;
-      if (e.key === 'Escape')     closeLightbox();
-      if (e.key === 'ArrowLeft')  showPrev();
-      if (e.key === 'ArrowRight') showNext();
+      if (e.key === 'Escape')      closeLightbox();
+      if (e.key === 'ArrowLeft')   navigate(-1);
+      if (e.key === 'ArrowRight')  navigate(1);
     });
 
-    // Touch swipe support
     let touchStartX = 0;
     lightbox.addEventListener('touchstart', (e) => { touchStartX = e.touches[0].clientX; }, { passive: true });
     lightbox.addEventListener('touchend', (e) => {
       const dx = e.changedTouches[0].clientX - touchStartX;
       if (Math.abs(dx) < 40) return;
-      dx < 0 ? showNext() : showPrev();
+      dx < 0 ? navigate(1) : navigate(-1);
     });
   </script>
 </body>
