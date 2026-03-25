@@ -451,6 +451,133 @@
       .g-item:nth-child(1) { grid-column: 1 / 3; aspect-ratio: 16/9; }
     }
 
+    /* ─── Lightbox ─── */
+    #lightbox {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 1000;
+      background: rgba(0,0,0,0.92);
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      cursor: pointer;
+    }
+
+    #lightbox.open { display: flex; animation: lb-in 0.2s ease; }
+
+    @keyframes lb-in {
+      from { opacity: 0; }
+      to   { opacity: 1; }
+    }
+
+    #lb-content {
+      position: relative;
+      max-width: min(90vw, 700px);
+      max-height: 90vh;
+      cursor: default;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+    }
+
+    #lb-img {
+      max-width: 100%;
+      max-height: 75vh;
+      object-fit: contain;
+      border-radius: 16px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+      display: block;
+      animation: lb-img-in 0.25s ease;
+    }
+
+    @keyframes lb-img-in {
+      from { transform: scale(0.94); opacity: 0; }
+      to   { transform: scale(1);    opacity: 1; }
+    }
+
+    #lb-caption {
+      color: #fff;
+      font-size: 1rem;
+      font-weight: 600;
+      text-align: center;
+      max-width: 500px;
+      line-height: 1.5;
+      text-shadow: 0 1px 4px rgba(0,0,0,0.5);
+    }
+
+    #lb-counter {
+      color: rgba(255,255,255,0.5);
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+    }
+
+    #lb-close {
+      position: fixed;
+      top: 20px;
+      right: 24px;
+      background: rgba(255,255,255,0.15);
+      border: none;
+      color: #fff;
+      font-size: 1.4rem;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s;
+      z-index: 1001;
+    }
+
+    #lb-close:hover { background: rgba(255,255,255,0.28); }
+
+    .lb-arrow {
+      position: fixed;
+      top: 50%;
+      transform: translateY(-50%);
+      background: rgba(255,255,255,0.15);
+      border: none;
+      color: #fff;
+      font-size: 2rem;
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s;
+      z-index: 1001;
+      line-height: 1;
+    }
+
+    .lb-arrow:hover { background: rgba(255,255,255,0.28); }
+    #lb-prev { left: 16px; }
+    #lb-next { right: 16px; }
+
+    @media (max-width: 640px) {
+      .lb-arrow { display: none; }
+    }
+
+    /* Make gallery items look tappable */
+    .g-item { cursor: pointer; }
+    .g-item::after {
+      content: '🔍';
+      position: absolute;
+      bottom: 12px;
+      right: 12px;
+      font-size: 1.1rem;
+      opacity: 0;
+      transition: opacity 0.2s;
+      filter: drop-shadow(0 1px 3px rgba(0,0,0,0.5));
+    }
+    .g-item { position: relative; }
+    .g-item:hover::after { opacity: 1; }
+
     /* ─── Footer ─── */
     footer {
       background: var(--footer-bg);
@@ -477,6 +604,18 @@
 
   <!-- Paw cursor -->
   <div id="cursor-dot">🐾</div>
+
+  <!-- Lightbox -->
+  <div id="lightbox" role="dialog" aria-modal="true" aria-label="Photo viewer">
+    <button id="lb-close" aria-label="Close">✕</button>
+    <button id="lb-prev" class="lb-arrow" aria-label="Previous photo">&#8249;</button>
+    <button id="lb-next" class="lb-arrow" aria-label="Next photo">&#8250;</button>
+    <div id="lb-content">
+      <img id="lb-img" src="" alt="" />
+      <p id="lb-caption"></p>
+      <span id="lb-counter"></span>
+    </div>
+  </div>
 
   <!-- Nav -->
   <nav>
@@ -552,25 +691,25 @@
       <h2 class="section-title">The Gallery</h2>
       <p class="section-sub">Proof that she's the cutest Mini Schnauzer alive.</p>
       <div class="gallery-grid">
-        <div class="g-item">
+        <div class="g-item" data-caption="Suited up and ready for absolutely nothing. Lily in her finest pajamas and striped leggings.">
           <img src="images/lily-pajamas.jpeg" alt="Lily in green pajamas with striped leggings" loading="lazy" />
         </div>
-        <div class="g-item">
+        <div class="g-item" data-caption="The smile that gets her anything she wants. Every. Single. Time.">
           <img src="images/lily-smiling.jpeg" alt="Lily smiling on the couch" loading="lazy" />
         </div>
-        <div class="g-item">
+        <div class="g-item" data-caption="Her official off-duty station. Disturbances will not be tolerated.">
           <img src="images/lily-dog-bed.jpeg" alt="Lily curled up in her dog bed" loading="lazy" />
         </div>
-        <div class="g-item">
+        <div class="g-item" data-caption="You said the B-word, didn't you. She will stay in this couch forever if she has to.">
           <img src="images/lily-couch-hiding.jpeg" alt="Lily wedged between the couch cushions" loading="lazy" />
         </div>
-        <div class="g-item">
+        <div class="g-item" data-caption="Fully committed to the holiday spirit. And also to this mattress. Mostly the mattress.">
           <img src="images/lily-christmas-bed.jpeg" alt="Lily on her back in a candy cane outfit" loading="lazy" />
         </div>
-        <div class="g-item">
+        <div class="g-item" data-caption="Conducting a very serious investigation. Do not rush her. This is important work.">
           <img src="images/lily-outdoor.jpeg" alt="Lily outside with a yellow bandana" loading="lazy" />
         </div>
-        <div class="g-item">
+        <div class="g-item" data-caption="She did not ask to be dressed up. She will not be taking questions at this time.">
           <img src="images/lily-christmas.jpeg" alt="Lily in her Christmas hoodie and peppermint bandana" loading="lazy" />
         </div>
       </div>
@@ -759,6 +898,66 @@
     }, { threshold: 0.15 });
 
     revealEls.forEach(el => observer.observe(el));
+
+    // ── Lightbox ──
+    const lightbox  = document.getElementById('lightbox');
+    const lbImg     = document.getElementById('lb-img');
+    const lbCaption = document.getElementById('lb-caption');
+    const lbCounter = document.getElementById('lb-counter');
+    const lbClose   = document.getElementById('lb-close');
+    const lbPrev    = document.getElementById('lb-prev');
+    const lbNext    = document.getElementById('lb-next');
+    const items     = Array.from(document.querySelectorAll('.g-item'));
+    let current     = 0;
+
+    function openLightbox(index) {
+      current = index;
+      const item   = items[index];
+      const img    = item.querySelector('img');
+      lbImg.src    = img.src;
+      lbImg.alt    = img.alt;
+      lbCaption.textContent = item.dataset.caption || img.alt;
+      lbCounter.textContent = `${index + 1} / ${items.length}`;
+      lightbox.classList.add('open');
+      document.body.style.overflow = 'hidden';
+      lbImg.style.animation = 'none';
+      requestAnimationFrame(() => { lbImg.style.animation = ''; });
+    }
+
+    function closeLightbox() {
+      lightbox.classList.remove('open');
+      document.body.style.overflow = '';
+    }
+
+    function showPrev() { openLightbox((current - 1 + items.length) % items.length); }
+    function showNext() { openLightbox((current + 1) % items.length); }
+
+    items.forEach((item, i) => item.addEventListener('click', () => openLightbox(i)));
+    lbClose.addEventListener('click', closeLightbox);
+    lbPrev.addEventListener('click', (e) => { e.stopPropagation(); showPrev(); });
+    lbNext.addEventListener('click', (e) => { e.stopPropagation(); showNext(); });
+
+    // Close on backdrop click
+    lightbox.addEventListener('click', (e) => {
+      if (e.target === lightbox) closeLightbox();
+    });
+
+    // Keyboard navigation
+    document.addEventListener('keydown', (e) => {
+      if (!lightbox.classList.contains('open')) return;
+      if (e.key === 'Escape')     closeLightbox();
+      if (e.key === 'ArrowLeft')  showPrev();
+      if (e.key === 'ArrowRight') showNext();
+    });
+
+    // Touch swipe support
+    let touchStartX = 0;
+    lightbox.addEventListener('touchstart', (e) => { touchStartX = e.touches[0].clientX; }, { passive: true });
+    lightbox.addEventListener('touchend', (e) => {
+      const dx = e.changedTouches[0].clientX - touchStartX;
+      if (Math.abs(dx) < 40) return;
+      dx < 0 ? showNext() : showPrev();
+    });
   </script>
 </body>
 </html>
