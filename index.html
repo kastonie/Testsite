@@ -586,7 +586,223 @@
     .g-item { position: relative; }
     .g-item:hover::after { opacity: 1; }
 
-    /* ─── Easter Egg: Bath Runner ─── */
+    /* ─── Retro Toggle Button (nav) ─── */
+    .retro-toggle {
+      background: none;
+      border: 2px solid var(--coral);
+      color: var(--coral);
+      font-family: 'Nunito', sans-serif;
+      font-weight: 800;
+      font-size: 0.8rem;
+      padding: 6px 14px;
+      border-radius: 999px;
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s;
+      white-space: nowrap;
+    }
+
+    .retro-toggle:hover { background: var(--coral); color: #fff; }
+
+    /* ─── Retro / GeoCities Mode ─── */
+    html.retro {
+      --coral:   #ff00ff;
+      --yellow:  #ffff00;
+      --sky:     #00ffff;
+      --lavender:#ff69b4;
+    }
+
+    html.retro body {
+      font-family: 'Comic Sans MS', 'Comic Sans', cursive !important;
+      background-color: #000080;
+      background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><circle cx='12' cy='8'  r='1'   fill='white' opacity='.9'/><circle cx='55' cy='25' r='1.5' fill='white' opacity='.7'/><circle cx='88' cy='55' r='1'   fill='white' opacity='.9'/><circle cx='30' cy='75' r='2'   fill='white' opacity='.6'/><circle cx='70' cy='95' r='1'   fill='white' opacity='.8'/><circle cx='100' cy='15' r='1' fill='white' opacity='.7'/><circle cx='20' cy='45' r='1'   fill='white' opacity='.9'/><circle cx='65' cy='65' r='1.5' fill='white' opacity='.7'/><circle cx='5'  cy='100' r='1'  fill='white' opacity='.8'/><circle cx='110' cy='80' r='1' fill='white' opacity='.6'/></svg>");
+      background-repeat: repeat;
+      cursor: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='20' height='20'><text y='16' font-size='16'>✨</text></svg>") 10 10, auto !important;
+      color: #ffff00;
+    }
+
+    html.retro nav {
+      background: linear-gradient(90deg, #ff00ff, #0000ff, #ff00ff) !important;
+      border-bottom: 4px solid #ffff00;
+      animation: retro-nav-scroll 3s linear infinite;
+      background-size: 200% 100% !important;
+    }
+
+    @keyframes retro-nav-scroll {
+      0%   { background-position: 0% 0%; }
+      100% { background-position: 200% 0%; }
+    }
+
+    html.retro .nav-logo {
+      color: #ffff00;
+      text-shadow: 2px 2px #ff0000, 0 0 10px #ff00ff;
+      animation: blink 1s step-start infinite;
+    }
+
+    html.retro .nav-links a { color: #00ffff; text-shadow: 0 0 8px #00ffff; }
+    html.retro .nav-links a:hover { color: #ffff00; }
+
+    html.retro .retro-toggle {
+      border-color: #ffff00;
+      color: #ffff00;
+      animation: blink 0.8s step-start infinite;
+    }
+
+    @keyframes blink {
+      50% { opacity: 0; }
+    }
+
+    @keyframes rainbow {
+      0%   { color: #ff0000; }
+      16%  { color: #ff8800; }
+      33%  { color: #ffff00; }
+      50%  { color: #00ff00; }
+      66%  { color: #0088ff; }
+      83%  { color: #ff00ff; }
+      100% { color: #ff0000; }
+    }
+
+    /* Marquee banner */
+    #retro-marquee {
+      display: none;
+      background: #000;
+      color: #ff0000;
+      font-family: 'Comic Sans MS', cursive;
+      font-weight: 700;
+      font-size: 1rem;
+      padding: 6px 0;
+      overflow: hidden;
+      white-space: nowrap;
+      border-bottom: 2px dashed #ffff00;
+    }
+
+    #retro-marquee span {
+      display: inline-block;
+      animation: marquee-scroll 18s linear infinite;
+    }
+
+    @keyframes marquee-scroll {
+      from { transform: translateX(100vw); }
+      to   { transform: translateX(-100%); }
+    }
+
+    html.retro #retro-marquee { display: block; }
+
+    html.retro .hero {
+      background: #000080 !important;
+      border-bottom: 6px double #ff00ff;
+    }
+
+    html.retro .hero h1 {
+      animation: rainbow 1.5s linear infinite;
+      text-shadow: 3px 3px #ff0000;
+      font-family: 'Comic Sans MS', cursive !important;
+    }
+
+    html.retro .hero-tag {
+      background: #ff0000;
+      color: #ffff00;
+      border: 2px solid #ffff00;
+      animation: blink 1.2s step-start infinite;
+    }
+
+    html.retro .hero-subtitle { color: #00ff00; }
+
+    html.retro .stat-chip {
+      background: #000044;
+      color: #ffff00;
+      border: 2px solid #00ffff;
+      box-shadow: 2px 2px 0 #ff00ff;
+    }
+
+    html.retro .share-btn {
+      background: #ff0000;
+      border: 3px outset #ff8888;
+      box-shadow: 3px 3px 0 #880000;
+      border-radius: 4px;
+      font-family: 'Comic Sans MS', cursive;
+    }
+
+    html.retro .sound-btn {
+      background: #008000;
+      border: 3px outset #88ff88;
+      box-shadow: 3px 3px 0 #004400;
+      border-radius: 4px;
+    }
+
+    html.retro #about { background: #000044; }
+
+    html.retro .section-title {
+      animation: rainbow 2s linear infinite;
+      text-shadow: 2px 2px #000;
+      font-family: 'Comic Sans MS', cursive !important;
+    }
+
+    html.retro .section-sub { color: #00ff00; }
+
+    html.retro .card {
+      background: #000066;
+      border: 4px outset #8888ff;
+      color: #ffffff;
+      box-shadow: 4px 4px 0 #ff00ff;
+    }
+
+    html.retro .card h3 { color: #ffff00; }
+    html.retro .card p  { color: #00ff00; }
+
+    html.retro .bath-card,
+    html.retro .desk-card { background: #000055; border: 4px outset #aaaaff; box-shadow: 4px 4px 0 #00ffff; }
+
+    html.retro .bath-text h2,
+    html.retro .desk-text h2 { animation: rainbow 2s linear infinite; font-family: 'Comic Sans MS', cursive !important; }
+
+    html.retro .bath-text p,
+    html.retro .desk-text p { color: #00ff00; }
+
+    html.retro .forbidden-chip { border: 2px solid #ffff00; }
+
+    html.retro #schedule { background: #000033; }
+
+    html.retro .timeline::before { background: linear-gradient(to bottom, #ff00ff, #00ffff); }
+
+    html.retro .tl-title { color: #ffff00; }
+    html.retro .tl-desc  { color: #00ff00; }
+    html.retro .tl-time  { color: #ff69b4; }
+
+    html.retro #gallery { background: #000044; }
+
+    html.retro .g-item { border: 3px solid #ff00ff; box-shadow: 3px 3px 0 #00ffff; }
+
+    html.retro footer {
+      background: #000;
+      border-top: 4px dashed #ff00ff;
+      color: #ffff00;
+    }
+
+    html.retro footer strong { color: #00ffff; }
+
+    html.retro #retro-footer-extras {
+      display: block !important;
+    }
+
+    #retro-footer-extras {
+      display: none;
+      margin-top: 20px;
+      font-family: 'Comic Sans MS', cursive;
+      font-size: 0.85rem;
+      color: #00ff00;
+    }
+
+    #retro-visitor-counter {
+      font-size: 1.1rem;
+      color: #ffff00;
+      background: #000;
+      border: 2px inset #888;
+      padding: 4px 12px;
+      display: inline-block;
+      font-family: 'Courier New', monospace;
+      letter-spacing: 3px;
+      margin: 8px 0;
+    }
     #bath-runner {
       position: fixed;
       top: 50%;
@@ -707,6 +923,10 @@
   </div>
 
   <!-- Nav -->
+  <div id="retro-marquee" aria-hidden="true">
+    <span>🌟 WELCOME TO LILY'S WORLD 🌟 &nbsp;&nbsp; 🐾 THE BEST MINI SCHNAUZER HOMEPAGE ON THE INTERNET 🐾 &nbsp;&nbsp; ⚡ BEST VIEWED IN NETSCAPE NAVIGATOR 4.0 AT 800x600 ⚡ &nbsp;&nbsp; 🚧 SITE UNDER CONSTRUCTION 🚧 &nbsp;&nbsp; 🌟 SIGN MY GUESTBOOK 🌟 &nbsp;&nbsp;</span>
+  </div>
+
   <nav>
     <div class="nav-logo">Lily 🐾</div>
     <ul class="nav-links">
@@ -716,6 +936,7 @@
       <li><a href="#gallery">Gallery</a></li>
       <li><a href="#schedule">Day in the Life</a></li>
     </ul>
+    <button class="retro-toggle" onclick="toggleRetro()" id="retroBtn">🌐 GeoCities Mode</button>
   </nav>
 
   <!-- Hero -->
@@ -931,6 +1152,14 @@
   <footer>
     <p>Made with 🐾 and lots of love for <strong>Lily</strong> — the best Mini Schnauzer in the world.</p>
     <p style="margin-top:8px; font-size:0.85rem; opacity:0.6;">She did not approve this website. She was asleep during production.</p>
+    <div id="retro-footer-extras" aria-hidden="true">
+      <p>🚧 THIS PAGE IS UNDER CONSTRUCTION 🚧</p>
+      <p style="margin-top:10px;">YOU ARE VISITOR NUMBER</p>
+      <div id="retro-visitor-counter">0001337</div>
+      <p style="margin-top:10px;">⭐ THIS SITE IS FRAMES-FREE ⭐ &nbsp; 🏆 GEOCITIES AWARD WINNER 1997 🏆</p>
+      <p style="margin-top:6px; color:#ff69b4;">[ <a href="#" style="color:#00ffff;">EMAIL WEBMASTER</a> ] &nbsp; [ <a href="#" style="color:#00ffff;">SIGN GUESTBOOK</a> ] &nbsp; [ <a href="#" style="color:#00ffff;">VIEW GUESTBOOK</a> ]</p>
+      <p style="margin-top:10px; font-size:0.75rem; color:#888;">Best viewed in Netscape Navigator 4.0 or Internet Explorer 5 at 800×600 resolution.</p>
+    </div>
   </footer>
 
   <!-- ─── JavaScript ─── -->
@@ -1134,6 +1363,21 @@
       if (Math.abs(dx) < 40) return;
       dx < 0 ? navigate(1) : navigate(-1);
     });
+
+    // ── GeoCities / Retro Mode ──
+    function toggleRetro() {
+      const on = document.documentElement.classList.toggle('retro');
+      const btn = document.getElementById('retroBtn');
+      btn.textContent = on ? '✨ Modern Mode' : '🌐 GeoCities Mode';
+      localStorage.setItem('retro', on ? '1' : '');
+      if (on) playBark();
+    }
+
+    // Restore preference across page loads
+    if (localStorage.getItem('retro')) {
+      document.documentElement.classList.add('retro');
+      document.getElementById('retroBtn').textContent = '✨ Modern Mode';
+    }
 
     // ── Lily's Age ──
     (function updateAge() {
