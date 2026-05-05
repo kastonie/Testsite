@@ -120,6 +120,8 @@
       justify-content: space-between;
       padding: 14px 40px;
       border-bottom: 2px solid var(--yellow);
+      flex-wrap: wrap;
+      gap: 8px;
     }
 
     .nav-logo {
@@ -138,6 +140,69 @@
     }
 
     .nav-links a:hover { color: var(--coral); }
+
+    /* Hamburger button — hidden on desktop */
+    .nav-hamburger {
+      display: none;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 4px;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .nav-hamburger span {
+      display: block;
+      width: 24px;
+      height: 2px;
+      background: var(--dark);
+      border-radius: 2px;
+      transition: transform 0.25s, opacity 0.25s;
+    }
+
+    .nav-hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    .nav-hamburger.open span:nth-child(2) { opacity: 0; }
+    .nav-hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+    /* Mobile drawer */
+    .nav-drawer {
+      display: none;
+      width: 100%;
+      padding: 12px 0 4px;
+      border-top: 1px solid rgba(0,0,0,0.08);
+    }
+
+    .nav-drawer.open { display: block; }
+
+    .nav-drawer ul {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .nav-drawer ul li a {
+      display: block;
+      padding: 10px 4px;
+      text-decoration: none;
+      font-weight: 700;
+      color: var(--dark);
+      border-bottom: 1px solid rgba(0,0,0,0.06);
+      transition: color 0.2s;
+    }
+
+    .nav-drawer ul li a:hover { color: var(--coral); }
+
+    .nav-drawer .retro-toggle {
+      margin-top: 10px;
+      width: 100%;
+    }
+
+    html.retro .nav-hamburger span { background: #ffff00; }
+    html.retro .nav-drawer { border-top-color: #ff00ff; }
+    html.retro .nav-drawer ul li a { color: #00ffff; border-bottom-color: #0000aa; text-shadow: 0 0 8px #00ffff; }
+    html.retro .nav-drawer ul li a:hover { color: #ffff00; }
 
     /* ─── Hero ─── */
     .hero {
@@ -895,12 +960,15 @@
     footer strong { color: var(--yellow); }
 
     /* ─── Responsive ─── */
-    @media (max-width: 640px) {
+    @media (max-width: 768px) {
       nav { padding: 12px 20px; }
-      .nav-links { gap: 16px; }
-      .bath-card, .desk-card {
-        grid-template-columns: 1fr;
-      }
+      .nav-links { display: none; }
+      .retro-toggle { display: none; }
+      .nav-hamburger { display: flex; }
+    }
+
+    @media (max-width: 640px) {
+      .bath-card, .desk-card { grid-template-columns: 1fr; }
       .bath-emoji-art { order: -1; }
     }
   </style>
@@ -937,6 +1005,19 @@
       <li><a href="#schedule">Day in the Life</a></li>
     </ul>
     <button class="retro-toggle" onclick="toggleRetro()" id="retroBtn">🌐 GeoCities Mode</button>
+    <button class="nav-hamburger" id="hamburgerBtn" aria-label="Menu" aria-expanded="false" onclick="toggleMobileNav()">
+      <span></span><span></span><span></span>
+    </button>
+    <div class="nav-drawer" id="navDrawer">
+      <ul>
+        <li><a href="#about"    onclick="closeMobileNav()">About</a></li>
+        <li><a href="#bath"     onclick="closeMobileNav()">Bath Time</a></li>
+        <li><a href="#desk"     onclick="closeMobileNav()">Desk Duty</a></li>
+        <li><a href="#gallery"  onclick="closeMobileNav()">Gallery</a></li>
+        <li><a href="#schedule" onclick="closeMobileNav()">Day in the Life</a></li>
+      </ul>
+      <button class="retro-toggle" onclick="toggleRetro(); closeMobileNav();" id="retroBtnMobile">🌐 GeoCities Mode</button>
+    </div>
   </nav>
 
   <!-- Hero -->
@@ -1377,7 +1458,31 @@
     if (localStorage.getItem('retro')) {
       document.documentElement.classList.add('retro');
       document.getElementById('retroBtn').textContent = '✨ Modern Mode';
+      document.getElementById('retroBtnMobile').textContent = '✨ Modern Mode';
     }
+
+    // ── Mobile Nav ──
+    function toggleMobileNav() {
+      const btn    = document.getElementById('hamburgerBtn');
+      const drawer = document.getElementById('navDrawer');
+      const open   = drawer.classList.toggle('open');
+      btn.classList.toggle('open', open);
+      btn.setAttribute('aria-expanded', open);
+    }
+
+    function closeMobileNav() {
+      document.getElementById('hamburgerBtn').classList.remove('open');
+      document.getElementById('navDrawer').classList.remove('open');
+      document.getElementById('hamburgerBtn').setAttribute('aria-expanded', 'false');
+    }
+
+    // Keep both retro buttons in sync
+    const _origToggleRetro = toggleRetro;
+    toggleRetro = function() {
+      _origToggleRetro();
+      const on = document.documentElement.classList.contains('retro');
+      document.getElementById('retroBtnMobile').textContent = on ? '✨ Modern Mode' : '🌐 GeoCities Mode';
+    };
 
     // ── Lily's Age ──
     (function updateAge() {
