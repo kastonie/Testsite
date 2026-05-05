@@ -199,6 +199,30 @@
       width: 100%;
     }
 
+    /* Mobile-only retro icon button */
+    .retro-toggle-mobile {
+      display: none;
+      align-items: center;
+      background: none;
+      border: 2px solid var(--coral);
+      color: var(--coral);
+      font-size: 1.1rem;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      cursor: pointer;
+      justify-content: center;
+      transition: background 0.2s, color 0.2s;
+    }
+
+    .retro-toggle-mobile:hover { background: var(--coral); color: #fff; }
+
+    html.retro .retro-toggle-mobile {
+      border-color: #ffff00;
+      color: #ffff00;
+      animation: blink 0.8s step-start infinite;
+    }
+
     html.retro .nav-hamburger span { background: #ffff00; }
     html.retro .nav-drawer { border-top-color: #ff00ff; }
     html.retro .nav-drawer ul li a { color: #00ffff; border-bottom-color: #0000aa; text-shadow: 0 0 8px #00ffff; }
@@ -965,6 +989,7 @@
       .nav-links { display: none; }
       .retro-toggle { display: none; }
       .nav-hamburger { display: flex; }
+      .retro-toggle-mobile { display: flex !important; }
     }
 
     @media (max-width: 640px) {
@@ -1005,6 +1030,7 @@
       <li><a href="#schedule">Day in the Life</a></li>
     </ul>
     <button class="retro-toggle" onclick="toggleRetro()" id="retroBtn">🌐 GeoCities Mode</button>
+    <button class="retro-toggle-mobile" id="retroBtnMobileIcon" onclick="toggleRetro()" aria-label="Toggle GeoCities mode" title="Toggle GeoCities mode">🌐</button>
     <button class="nav-hamburger" id="hamburgerBtn" aria-label="Menu" aria-expanded="false" onclick="toggleMobileNav()">
       <span></span><span></span><span></span>
     </button>
@@ -1457,8 +1483,13 @@
     // Restore preference across page loads
     if (localStorage.getItem('retro')) {
       document.documentElement.classList.add('retro');
-      document.getElementById('retroBtn').textContent = '✨ Modern Mode';
-      document.getElementById('retroBtnMobile').textContent = '✨ Modern Mode';
+      syncRetroButtons(true);
+    }
+
+    function syncRetroButtons(on) {
+      document.getElementById('retroBtn').textContent         = on ? '✨ Modern Mode' : '🌐 GeoCities Mode';
+      document.getElementById('retroBtnMobile').textContent   = on ? '✨ Modern Mode' : '🌐 GeoCities Mode';
+      document.getElementById('retroBtnMobileIcon').textContent = on ? '✨' : '🌐';
     }
 
     // ── Mobile Nav ──
@@ -1476,12 +1507,11 @@
       document.getElementById('hamburgerBtn').setAttribute('aria-expanded', 'false');
     }
 
-    // Keep both retro buttons in sync
+    // Keep all retro buttons in sync
     const _origToggleRetro = toggleRetro;
     toggleRetro = function() {
       _origToggleRetro();
-      const on = document.documentElement.classList.contains('retro');
-      document.getElementById('retroBtnMobile').textContent = on ? '✨ Modern Mode' : '🌐 GeoCities Mode';
+      syncRetroButtons(document.documentElement.classList.contains('retro'));
     };
 
     // ── Lily's Age ──
